@@ -46,9 +46,24 @@ def main():
 
     model = YOLO('models/yolov8m.pt')
 
-    recording = False
     stream_url = input("Insira url do video/stream a ser analisado: ")
     stream = CamGear(source=stream_url, stream_mode=True, logging=True).start()
+
+    while True:
+        rec_input = input("Deseja registrar a detecção como video? (sim/nao)")
+
+        if rec_input.lower() in ["sim","s","yes","y"]:
+            recording = True
+            print("Gravacao habilitada, esta sera armazenada na pasta \'rec\'.")
+            break
+        elif rec_input.lower() in ["nao","não","n","no"]:
+            recording = False
+            print('Gravacao desabilitada.')
+            break
+        else:
+            print('Input invalido')
+
+
 
     frame_cur = 0
 
@@ -58,7 +73,7 @@ def main():
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         vid_size = (frame.shape[1],frame.shape[0])
         #Inicia um a gravação de um video
-        out_vid = cv2.VideoWriter('rec/porto_de_santos.mp4',fourcc, 20.0, vid_size)
+        out_vid = cv2.VideoWriter('rec/detection_output.mp4',fourcc, 20.0, vid_size)
 
     while frame_cur < 54000:
 
