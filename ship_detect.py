@@ -2,6 +2,8 @@ from vidgear.gears import CamGear
 import cv2
 from ultralytics import YOLO
 import numpy as np
+from datetime import datetime
+
 
 #Diferentes modelos do YOLOV8 (ordem crescente de peso/eficacia)
 #model = YOLO('models/yolov8n.pt') # Modelo menos pesado/eficaz
@@ -73,7 +75,7 @@ def main():
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         vid_size = (frame.shape[1],frame.shape[0])
         #Inicia um a gravação de um video
-        out_vid = cv2.VideoWriter('rec/detection_output.mp4',fourcc, 20.0, vid_size)
+        out_vid = cv2.VideoWriter(f'rec/detection_output-{(datetime.now()).strftime("%Y-%m-%d_%H-%M-%S")}.mp4',fourcc, 20.0, vid_size)
 
     while frame_cur < 54000:
 
