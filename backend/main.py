@@ -11,9 +11,7 @@ app = FastAPI()
 
 model = YOLO('models/vedit-std_v1.2.pt')
 
-video_src = "https://www.youtube.com/watch?v=tWUIUDd4DgE" #Porto de Santos
-#stream_url = "https://www.youtube.com/watch?v=6IKZS6guYO0" #Harbor Marina
-stream = "CamGear(source=video_src, stream_mode=True, logging=True).start()"
+stream = None
 
 
 @app.get("/")
@@ -30,7 +28,7 @@ async def main_page():
         <h1>Links</h1>
         <a href=http://localhost:8000/detect/>Detect</a>
         <a href=http://localhost:8000/stream/>Stream</a>
-        <h2>Video Stream</h2>
+        <h2>Stream</h2>
         <img src="http://localhost:8000/stream/" alt="Video Stream" id="video">
     </body>
     </html>
@@ -40,10 +38,10 @@ async def main_page():
 @app.post("/set_source/")
 async def set_source(src: str, is_stream: bool):
     global stream
-    #global stream_src
     
     if stream:
         stream.stop()
+    
     stream = CamGear(source=src, stream_mode=is_stream, logging=True).start()
     return {"message": f"Source set as {src}"}
 
@@ -54,7 +52,7 @@ async def set_source(src: str, is_stream: bool):
 #     global stream
 #     frame = stream.read()
 #     if frame is None:
-#         return Response(content="Novo frame indisponivel", status_code=204)
+#         return Response(content="Novo frame indisponivel", status_code=200)
     
 #     _, image = cv2.imencode('.jpg', frame)
     
@@ -62,7 +60,10 @@ async def set_source(src: str, is_stream: bool):
 
 async def generate_frame():
     global stream
+
     while True:
+        if stream is None:
+            break
         try:
             frame = stream.read()
             if frame is None:
@@ -85,9 +86,12 @@ async def get_stream():
 async def detect():
     global stream
 
+    if stream is None:
+        return Response(content="No stream available", status_code=200)
+
     frame = stream.read()
     if frame is None:
-        return Response(content="No frame available", status_code=204)
+        return Response(content="No frame available", status_code=200)
 
     #results = model.predict(frame, stream=True, conf=0.1, imgsz=256, visualize=True)
     results = model.predict(frame, conf=0.1, augment=True, half=True, agnostic_nms=True)
@@ -113,9 +117,12 @@ async def detect():
 async def ship_detect():
     global stream
 
+    if stream is None:
+        return Response(content="No stream available", status_code=200)
+
     frame = stream.read()
     if frame is None:
-        return Response(content="No frame available", status_code=204)
+        return Response(content="No frame available", status_code=200)
     
     results = model.predict(frame, conf=0.1, augment=True, agnostic_nms=True)
 
