@@ -1,0 +1,6 @@
+fastapi==0.112.0
+numpy==2.0.1
+opencv_python==4.9.0.80
+ultralytics==8.2.51
+uvicorn==0.30.5
+vidgear==0.3.2
