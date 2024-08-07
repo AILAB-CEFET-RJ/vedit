@@ -13,7 +13,7 @@ model = YOLO('models/vedit-std_v1.2.pt')
 
 video_src = "https://www.youtube.com/watch?v=tWUIUDd4DgE" #Porto de Santos
 #stream_url = "https://www.youtube.com/watch?v=6IKZS6guYO0" #Harbor Marina
-stream = CamGear(source=video_src, stream_mode=True, logging=True).start()
+stream = "CamGear(source=video_src, stream_mode=True, logging=True).start()"
 
 
 @app.get("/")
@@ -45,7 +45,7 @@ async def set_source(src: str, is_stream: bool):
     if stream:
         stream.stop()
     stream = CamGear(source=src, stream_mode=is_stream, logging=True).start()
-    return {"message": "Source changed"}
+    return {"message": f"Source set as {src}"}
 
 
 
@@ -87,7 +87,7 @@ async def detect():
 
     frame = stream.read()
     if frame is None:
-        return Response(content="Stream ended or no frame available", status_code=204)
+        return Response(content="No frame available", status_code=204)
 
     #results = model.predict(frame, stream=True, conf=0.1, imgsz=256, visualize=True)
     results = model.predict(frame, conf=0.1, augment=True, half=True, agnostic_nms=True)
@@ -115,7 +115,7 @@ async def ship_detect():
 
     frame = stream.read()
     if frame is None:
-        return Response(content="Stream ended or no frame available", status_code=204)
+        return Response(content="No frame available", status_code=204)
     
     results = model.predict(frame, conf=0.1, augment=True, agnostic_nms=True)
 
