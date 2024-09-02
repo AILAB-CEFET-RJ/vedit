@@ -4,22 +4,6 @@ from ultralytics import YOLO
 import numpy as np
 from datetime import datetime
 
-
-#Diferentes modelos do YOLOV8 (ordem crescente de peso/eficacia)
-#model = YOLO('models/yolov8n.pt') # Modelo menos pesado/eficaz
-#model = YOLO('models/yolov8s.pt') # 
-#model = YOLO('models/yolov8m.pt') # Modelo atual
-#model = YOLO('models/yolov8l.pt') # 
-#model = YOLO('models/yolov8x.pt') # Modelo mais pesado/eficaz
-
-#Diferentes vídeos para teste
-# 'https://www.youtube.com/watch?v=CubAd2gt4rU' #Navio Royalty Free
-# 'https://www.youtube.com/watch?v=8WD3lAVvbHo' #Navio Rodando
-# 'https://www.youtube.com/watch?v=uDOTRV-chaE' #Cruseiro
-
-
-
-
 def annotate_text(text, frame, pos_x, pos_y, font_size):
 
     shape = np.zeros_like(frame, np.uint8)
@@ -43,10 +27,55 @@ def annotate_text(text, frame, pos_x, pos_y, font_size):
 
     return frame
 
+def annotate_bounding_box(ship_class, prob, dim, frame):
+
+    if ship_class == 0:
+        border_color = (255, 0, 0)
+        font_color = (255,255,255)
+    elif ship_class == 1:
+        border_color = (0, 255, 255)
+        font_color = (255,255,255)
+    elif ship_class == 2:
+        border_color = (255, 255, 0)
+        font_color = (255,255,255)
+    elif ship_class == 3:
+        border_color = (0, 255, 0)
+        font_color = (255,255,255)
+    elif ship_class == 4:
+        border_color = (0, 0, 255)
+        font_color = (255,255,255)
+
+    ship_dict = {
+        0: "Cargo",
+        1: "Carrier",
+        2: "Cruise",
+        3: "Military",
+        4: "Tanker"
+    }
+
+    font_size = 0.8
+    class_identifier = f"{ship_dict[int(ship_class)]}: {(prob*100):.2f}%"
+
+    ann_frame1 = cv2.rectangle(frame, (int(dim[0]),int(dim[1])), (int(dim[2]),int(dim[3])), border_color, thickness=3)
+    ann_frame2 = cv2.rectangle(ann_frame1, (int(dim[0]),int(dim[1])), (int(dim[0] + (len(class_identifier) * (font_size * 20))),int(dim[1] + (font_size * 40))), border_color, thickness=-1)
+
+    ann_frame3 = cv2.putText(
+    ann_frame2,
+    class_identifier,
+    (int(dim[0] + (font_size * 10)), int(dim[1] + (font_size * 30))),
+    cv2.FONT_HERSHEY_SIMPLEX,
+    font_size,
+    font_color,
+    2,
+    )
+
+    return ann_frame3
+
+    
 
 def main():
 
-    model = YOLO('models/yolov8m.pt')
+    model = YOLO('models/vedit-std_v1.2.pt')
 
     stream_url = input("Insira url do video/stream a ser analisado: ")
     stream = CamGear(source=stream_url, stream_mode=True, logging=True).start()
@@ -77,7 +106,9 @@ def main():
         #Inicia um a gravação de um video
         out_vid = cv2.VideoWriter(f'rec/detection_output-{(datetime.now()).strftime("%Y-%m-%d_%H-%M-%S")}.mp4',fourcc, 20.0, vid_size)
 
-    while frame_cur < 54000:
+    pred_frame = 15
+
+    while True:
 
         if frame is None:
             print('END OF STREAM')
@@ -86,12 +117,21 @@ def main():
         frame_cur += 1
 
         #CLASSES: Standard YOLOV8:{8: 'ship'} 
-        #Ship Model:{0: 'container', 1: 'cruise', 2: 'fish-b', 3: 'sail boat', 4: 'warship'}
-        results = model.predict(frame, stream=True, conf=0.3, classes=[8])
+        #Ship Model:{0: 'Cargo', 1: 'Carrier', 2: 'Cruise', 3: 'Military', 4: 'Tanker'}
+        if pred_frame >= 15:
+            results = model.predict(frame, stream=True, conf=0.3)
+            pred_frame = 0
+        pred_frame += 1
 
         results = list(results)
 
-        annotated_frame = results[0].plot()
+        #Desenha bounding boxes da deteccao
+        annotated_frame = frame
+        for index, it in enumerate(results[0].boxes.cls):
+            annotated_frame = annotate_bounding_box(it, results[0].boxes.conf[index], results[0].boxes.xyxy[index], annotated_frame)
+
+        #Metodo antigo para gerar bounding box na tela
+        #annotated_frame = results[0].plot()
         
         #Anote o número de navios detectados no frame
         annotated_frame = annotate_text(('Navios: ' + str(len(results[0].boxes.cls))),
