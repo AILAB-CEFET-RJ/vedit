@@ -10,19 +10,14 @@ Navegue até o diretório onde se encontra o projeto, e no terminal/cmd do seu s
 ```
 pip install -r requirements.txt
 ```
+### Setting Current Model
 
+Para que o script funcione, é necessário que se tenha um modelo compativel com o mesmo. Atualmente, o VEDIT está configurado para trabalhar com o modelo `vedit-std_v1.2.pt`, treinado com base neste [dataset](https://universe.roboflow.com/grodval/vedit-std-v1). Você pode baixar o modelo já treinado [aqui](https://www.dropbox.com/scl/fi/wm2m4e5d69ehef2d0svne/vedit-std_v1.2.pt?rlkey=6tgsgsnw8yxi18ipprnnb5ybi&e=1&st=0n7k7pms&dl=0).
 
+Após baixado, apenas transfira o modelo para a pasta `/models`.
 
 ## Ship Detection
 
 Através do script **ship_detect.py** é possível executar um processo de detecção de barcos/navios sobre a URL de um vídeo ou stream.
 
 Ao executar o script, você tera que inserir um link válido. Então, o programa funcionara sobre o video/stream até o seu final, ou até que a tecla **'Q'** seja pressionada.
-
-## AIS Data
-
-Ao rodar **aisstream_data.py** será possível receber informações AIS de três diferentes tipos (*PositionReport*, *ShipStaticData* e *ExtendedClassBPositionReport*) dentro de um território delimitado por um retângulo criado através de duas diferentes coordenadas geográficas.
-
-Atualmente, a área selecionada pelo programa é consideravelmente pequena, então é possível ficar uma quantidade significativa de tempo sem receber qualquer mensagem.
-
-**É necessário uma chave para a API do AIS Stream para a execução deste script. Ele lerá um arquivo .env, que deve possuir a chave no formato 'AIS_KEY=*chave*'.**
