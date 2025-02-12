@@ -152,7 +152,7 @@ def main():
     ship_data = load_json_data('./videos/cinematicas')
 
     model = YOLO('models/vedit-std_v2.4.pt')
-    video_path = r"C:\Users\rodri\OneDrive\Área de Trabalho\VEDIT\vedit-main\vedit-main\videos\vid3.mp4"
+    video_path = r"videos/vid3.mp4"
     if not os.path.exists(video_path):
         print(f"Erro: arquivo de vídeo '{video_path}' não encontrado.")
         return
