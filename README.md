@@ -12,7 +12,7 @@ pip install -r requirements.txt
 ```
 ### Setting Current Model
 
-Para que o script funcione, é necessário que se tenha um modelo compativel com o mesmo. Atualmente, o VEDIT está configurado para trabalhar com o modelo `vedit-std_v1.2.pt`, treinado com base neste [dataset](https://universe.roboflow.com/grodval/vedit-std-v1). Você pode baixar o modelo já treinado [aqui](https://www.dropbox.com/scl/fi/wm2m4e5d69ehef2d0svne/vedit-std_v1.2.pt?rlkey=6tgsgsnw8yxi18ipprnnb5ybi&e=1&st=0n7k7pms&dl=0).
+Para que o script funcione, é necessário que se tenha um modelo compativel com o mesmo. Atualmente, o VEDIT está configurado para trabalhar com o modelo `vedit-std_v1.2.pt`, treinado com base neste [dataset](https://universe.roboflow.com/projetos-9tpwk/vedit). Você pode baixar o modelo já treinado [aqui](https://drive.google.com/file/d/1V8qnRz-PJO23ZLZMNV0gl32FrVRWPXlF/view).
 
 Após baixado, apenas transfira o modelo para a pasta `/models`.
 
