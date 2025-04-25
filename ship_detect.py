@@ -5,6 +5,20 @@ import numpy as np
 from datetime import datetime
 import json
 import os
+import torch
+from torch.serialization import add_safe_globals
+
+from ultralytics.nn.modules.conv import Conv,Concat,Focus
+from ultralytics.nn.modules.block import DFL,C2f, Bottleneck, SPPF, C3, C3TR, C3x, C2, C3Ghost,SPPF,BottleneckCSP
+from ultralytics.nn.tasks import DetectionModel
+from torch.nn import ModuleList, Sequential
+from torch.nn.modules.conv import Conv2d
+from torch.nn.modules.batchnorm import BatchNorm2d
+from torch.nn.modules.activation import SiLU, ReLU, LeakyReLU
+from torch.nn.modules.pooling import MaxPool2d 
+from torch.nn.modules.upsampling import Upsample
+from ultralytics.nn.modules.head import Classify
+from ultralytics.nn.modules.head import Detect
 
 ship_dict = {
     0: "Cargo",
@@ -150,9 +164,35 @@ def annotate_bounding_box(ship_class, prob, dim, frame, ship_info={}):
 def main():
     global recording
     ship_data = load_json_data('./videos/cinematicas')
-
+    add_safe_globals([
+    Conv,
+    C2f,
+    Bottleneck,
+    SPPF,
+    C3,
+    C3TR,
+    C3x,
+    C2,
+    C3Ghost,
+    DetectionModel,
+    Detect,
+    ModuleList,
+    Sequential,
+    Conv2d,
+    BatchNorm2d,
+    SiLU,
+    ReLU,
+    LeakyReLU,
+    MaxPool2d,
+    Upsample,
+    Concat,
+    Focus,
+    BottleneckCSP,
+    Classify,
+    DFL,
+])
     model = YOLO('models/vedit-std_v2.4.pt')
-    video_path = r"videos/vid3.mp4"
+    video_path = r"videos/cinematicas/vid3.mp4"
     if not os.path.exists(video_path):
         print(f"Erro: arquivo de vídeo '{video_path}' não encontrado.")
         return
