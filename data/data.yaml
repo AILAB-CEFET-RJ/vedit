@@ -1,0 +1,13 @@
+train: train/images
+val: valid/images
+test: test/images
+
+nc: 7
+names: ['Cargo', 'Cruise', 'Military', 'Offshore', 'Passenger', 'Tanker', 'Tug']
+
+roboflow:
+  workspace: projetos-9tpwk
+  project: vedit
+  version: 7
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/projetos-9tpwk/vedit/dataset/7
